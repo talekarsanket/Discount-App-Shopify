@@ -1,0 +1,27 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+name = "automatic-bxgy-discount-app"
+client_id = "1f95e7926d63261d28caaf98ef5139ca"
+application_url = "https://oxford-focal-answered-coordination.trycloudflare.com"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products,write_discounts,read_themes,write_orders,read_inventory,read_gift_cards,read_locations,read_markets"
+
+[auth]
+redirect_urls = [
+  "https://oxford-focal-answered-coordination.trycloudflare.com/auth/callback",
+  "https://oxford-focal-answered-coordination.trycloudflare.com/auth/shopify/callback",
+  "https://oxford-focal-answered-coordination.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-01"
+
+[pos]
+embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "new-test-55-second.myshopify.com"
