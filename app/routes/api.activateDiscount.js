@@ -3,46 +3,44 @@ import { authenticate } from "../shopify.server";
 
 export const action = async ({ request }) => {
   try {
+    const { admin } = await authenticate.admin(request);
+
     const offerId = await request.json();
     // console.log("offerId =====", offerId);
 
-    const databaseData = await productDetails.find({ OfferId: offerId });
-    // console.log("databaseData ======", databaseData);
-
-    const { admin } = await authenticate.admin(request);
-
     const response = await admin.graphql(
       `#graphql
-          mutation discountAutomaticActivate($id: ID!) {
-            discountAutomaticActivate(id: $id) {
-              automaticDiscountNode {
-                automaticDiscount {
-                  ... on DiscountAutomaticBxgy {
-                    status
-                    startsAt
-                    endsAt
+            mutation discountAutomaticActivate($id: ID!) {
+              discountAutomaticActivate(id: $id) {
+                automaticDiscountNode {
+                  automaticDiscount {
+                    ... on DiscountAutomaticBxgy {
+                      status
+                      startsAt
+                      endsAt
+                    }
                   }
                 }
+                userErrors {
+                  field
+                  message
+                }
               }
-              userErrors {
-                field
-                message
-              }
-            }
-          }`,
+            }`,
       {
         variables: {
           id: `gid://shopify/DiscountAutomaticNode/${offerId}`,
         },
       }
     );
+
     const data = await response.json();
-    // console.log("dataaaa ==============", data);
-    const discountActive =
-      data.data.discountAutomaticActivate.automaticDiscountNode;
+    console.log("dataaaa ==============", data);
+
+    const discountActive = data.data.discountAutomaticActivate.automaticDiscountNode;
     console.log("discountActive ====", discountActive);
 
-    const userError = data.data.discountAutomaticActivate.userErrors;
+    const userError = data.data.discountAutomaticActivate.userErrors[0];
     console.log("userError ====", userError);
 
     if (discountActive) {
@@ -54,14 +52,13 @@ export const action = async ({ request }) => {
         }
       );
       // console.log("activateDsicountInDB ====", activateDsicountInDB);
-
       return {
         message: "Offer Activated",
         status: 200,
       };
     } else if (userError) {
       return {
-        message: "Invalid Discount Id",
+        message: userError.message,
         status: 201,
       };
     }

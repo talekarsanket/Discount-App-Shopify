@@ -20,6 +20,7 @@
     "@mui/icons-material": "^5.15.4",
     "@prisma/client": "^4.13.0",
     "@reduxjs/toolkit": "^2.0.1",
+    "@remix-run/css-bundle": "^2.6.0",
     "@remix-run/dev": "^2.0.0",
     "@remix-run/node": "^2.0.0",
     "@remix-run/react": "^2.0.0",

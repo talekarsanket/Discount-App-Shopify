@@ -1,0 +1,191 @@
+.homeSection {
+    display: flex;
+    gap: 20px;
+}
+
+.loader-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.showBanner {
+    margin: 15px 0px 15px 0px;
+}
+
+.loader {
+    border: 8px solid #f3f3f3;
+    /* Light grey */
+    border-top: 8px solid #3498db;
+    /* Blue */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    /* Box shadow */
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* ---------------------left section--------------------- */
+.leftSection {
+    width: 68%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ---------------------Upper Section--------------------- */
+.heading {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.titleField {
+    width: 90%;
+    margin-left: 20px;
+}
+
+
+/* ---------------------Middle Section--------------------- */
+.productDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.selectProductDiv {
+    width: 70%;
+    margin-left: 20px;
+}
+
+.selectProductDiv>h2 {
+    font-size: initial;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.selectProdcut {
+    display: flex;
+    gap: 8px;
+    width: 130%;
+}
+
+.selectProduct_textfield {
+    width: 100%;
+}
+
+.selectProduct_button {
+    box-shadow: rgb(0 0 0 / 58%) 0px 2px 5px -1px, rgb(166 156 156 / 30%) 0px 1px 3px -1px;
+    padding: 5px;
+    border-radius: 5px;
+    max-height: 30px;
+    cursor: pointer;
+    background-color: white;
+    border: 0px;
+}
+
+.discountType {
+    width: 63%;
+    margin-left: 30px;
+    /* font-size: medium; */
+}
+
+.selectOffer {
+    width: 90%;
+    margin-left: 20px;
+}
+.discountTypeAndValue{
+    width: 90%;
+    margin-left: 20px;
+}
+
+/* -------------------- lower Section ----------------------- */
+.lowerSection {
+    display: block;
+    padding: 10px;
+    width: 93%;
+    margin: auto;
+}
+
+.calender {
+    padding: 20px;
+}
+
+/* ---------------------Right Section--------------------- */
+.rigthSection {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.rightAbove {
+    width: 100%;
+}
+
+.summery,
+.typeandmethod,
+.performance {
+    margin-bottom: 20px;
+}
+
+.summery>h1 {
+    font-size: medium;
+    font-weight: bold;
+}
+
+
+.typeandmethod>h1 {
+    font-size: medium;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.Details {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.Details>h1 {
+    font-size: medium;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.showDateAndTime>h1 {
+    font-size: medium;
+    font-weight: bold;
+}
+
+.performance>h1 {
+    font-size: medium;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* ---------------right Down --------------- */
+.rightDown {
+    width: 100%;
+    padding: 30px;
+}
+
+.submitButton {
+    text-align: center;
+    margin-top: 20px;
+}

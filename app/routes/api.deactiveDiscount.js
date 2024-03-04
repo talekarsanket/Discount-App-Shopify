@@ -5,7 +5,8 @@ export const action = async ({ request }) => {
   try {
     const offerId = await request.json();
     // console.log("deactivate discount id =========", offerId);
-    const { admin, session } = await authenticate.admin(request);
+
+    const { admin } = await authenticate.admin(request);
 
     const response = await admin.graphql(
       `mutation discountAutomaticDeactivate($id: ID!) {
@@ -34,12 +35,11 @@ export const action = async ({ request }) => {
 
     const data = await response.json();
     const automaticDiscount =
-      data.data.discountAutomaticDeactivate.automaticDiscountNode
-        .automaticDiscount;
-    console.log("automaticDiscount ======", automaticDiscount);
+      data.data.discountAutomaticDeactivate.automaticDiscountNode;
+    // console.log("automaticDiscount ======", automaticDiscount);
 
-    const userErrors = data.data.discountAutomaticDeactivate.userErrors;
-    console.log("userErrors ======", userErrors);
+    const userErrors = data.data.discountAutomaticDeactivate.userErrors[0];
+    // console.log("userErrors ======", userErrors);
 
     if (automaticDiscount) {
       const updateStatusinDb = await productDetails.findOneAndUpdate(
@@ -55,7 +55,7 @@ export const action = async ({ request }) => {
       };
     } else if (userErrors) {
       return {
-        message: "Invalid Discount Id",
+        message: userErrors.message,
         status: 201,
       };
     }

@@ -2,7 +2,7 @@
 
 name = "automatic-bxgy-discount-app"
 client_id = "1f95e7926d63261d28caaf98ef5139ca"
-application_url = "https://oxford-focal-answered-coordination.trycloudflare.com"
+application_url = "https://generous-capture-comment-paintball.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,write_discounts,read_themes,write_orders,read_inventory
 
 [auth]
 redirect_urls = [
-  "https://oxford-focal-answered-coordination.trycloudflare.com/auth/callback",
-  "https://oxford-focal-answered-coordination.trycloudflare.com/auth/shopify/callback",
-  "https://oxford-focal-answered-coordination.trycloudflare.com/api/auth/callback"
+  "https://generous-capture-comment-paintball.trycloudflare.com/auth/callback",
+  "https://generous-capture-comment-paintball.trycloudflare.com/auth/shopify/callback",
+  "https://generous-capture-comment-paintball.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

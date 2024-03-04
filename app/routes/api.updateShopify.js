@@ -3,7 +3,7 @@ import { updateDiscount as graphqlUpdateDiscount } from "../graphql/updateDiscou
 
 export const action = async ({ request }) => {
   const data = await request.json();
-  console.log("request=====", data);
+  // console.log("request=====", data);
 
   try {
     const { admin, session } = await authenticate.admin(request);
@@ -13,7 +13,7 @@ export const action = async ({ request }) => {
       data,
       session.shop
     );
-    console.log("responseee ====", response);
+    // console.log("responseee===============", response);
     return response;
     
   } catch (error) {

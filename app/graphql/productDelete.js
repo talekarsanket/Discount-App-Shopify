@@ -35,10 +35,6 @@ export const productDeleteCheck = async (id, admin, session) => {
       if (jsonResponse.data && jsonResponse.data.discountAutomaticDelete) {
         const deletedAutomaticDiscountId =
           jsonResponse.data.discountAutomaticDelete.deletedAutomaticDiscountId;
-        // console.log(
-        //   "deletedAutomaticDiscountId =====",
-        //   deletedAutomaticDiscountId
-        // );
 
         if (jsonResponse) {
           let splitId = deletedAutomaticDiscountId.split("/")[4];

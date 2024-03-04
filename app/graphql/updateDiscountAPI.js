@@ -1,96 +1,101 @@
 import productDetails from "../Database/productDetails";
 
-export const updateDiscount = async (graphql, data, shop) => {
+export const updateDiscount = async (graphql, data) => {
   try {
     let {
       BuyProduct,
       GetProduct,
       discountPercent,
       offerTitle,
-      startDate,
       endDate,
       offerId,
       selectOffer,
     } = data;
-    console.log("data =====", data);
-    console.log("startDate ===", startDate);
+    // console.log("data =====", data);
 
-    if (endDate) {
-      endDate = new Date(endDate);
-      endDate.setDate(endDate.getDate() + 1);
-    }
-    // console.log("endDate =========", new Date(endDate));
+    const findProductToUpdate = await productDetails.findOne({
+      OfferId: offerId,
+    });
 
-    const findProducts = await productDetails.findOne({ OfferId: offerId });
-    // console.log("findProducts ================", findProducts);
+    if (findProductToUpdate) {
+      let startDate = new Date(findProductToUpdate.OfferStartDate);
 
-    const { buyProduct, getProduct } = findProducts;
+      let endDateString = new Date(endDate);
+      if (
+        new Date(endDate).toISOString() !==
+        new Date(findProductToUpdate.OfferEndDate).toISOString()
+      ) {
+        endDateString.setDate(endDateString.getDate() + 1);
+        // console.log("endDateString11111 ============", endDateString);
+      }
 
-    let updateBuyProduct;
-    if (buyProduct.productID !== BuyProduct.productID) {
-      updateBuyProduct = {
-        items: {
-          products: {
-            productsToAdd: [`${BuyProduct.productID}`],
-            productsToRemove: [`${buyProduct.productID}`],
+      const { buyProduct, getProduct } = findProductToUpdate;
+      // ========================  product add or remove ======================//
+      let updateBuyProduct;
+      if (buyProduct.productID !== BuyProduct.productID) {
+        updateBuyProduct = {
+          items: {
+            products: {
+              productsToAdd: [`${BuyProduct.productID}`],
+              productsToRemove: [`${buyProduct.productID}`],
+            },
           },
-        },
-      };
-    } else {
-      updateBuyProduct = {
-        items: {
-          products: {
-            productsToAdd: [`${BuyProduct.productID}`],
+        };
+      } else {
+        updateBuyProduct = {
+          items: {
+            products: {
+              productsToAdd: [`${BuyProduct.productID}`],
+            },
           },
-        },
-      };
-    }
+        };
+      }
 
-    let updateGetProduct;
-    if (getProduct.productId !== GetProduct.productID) {
-      updateGetProduct = {
-        items: {
-          products: {
-            productsToAdd: [`${GetProduct.productID}`],
-            productsToRemove: [`${getProduct.productId}`],
+      let updateGetProduct;
+      if (getProduct.productId !== GetProduct.productID) {
+        updateGetProduct = {
+          items: {
+            products: {
+              productsToAdd: [`${GetProduct.productID}`],
+              productsToRemove: [`${getProduct.productId}`],
+            },
           },
-        },
-      };
-    } else {
-      updateGetProduct = {
-        items: {
-          products: {
-            productsToAdd: [`${GetProduct.productID}`],
+        };
+      } else {
+        updateGetProduct = {
+          items: {
+            products: {
+              productsToAdd: [`${GetProduct.productID}`],
+            },
           },
-        },
-      };
-    }
-    // console.log("updatebuyProduct=======", { ...updateBuyProduct });
+        };
+      }
 
-    let customersGetsQuery;
-    if (selectOffer === "Percent") {
-      console.log("percent");
-      customersGetsQuery = {
-        discountOnQuantity: {
-          quantity: "1",
-          effect: {
-            percentage: Number(discountPercent) / 100,
+      // ========================== set amount in percentage ========================//
+      let customersGetsQuery;
+      if (selectOffer === "Percent") {
+        console.log("percent");
+        customersGetsQuery = {
+          discountOnQuantity: {
+            quantity: "1",
+            effect: {
+              percentage: Number(discountPercent) / 100,
+            },
           },
-        },
-      };
-    } else {
-      console.log("amount");
-      customersGetsQuery = {
-        discountOnQuantity: {
-          quantity: "1",
-          effect: {
-            percentage: Number(discountPercent) / Number(GetProduct.price),
+        };
+      } else {
+        console.log("amount");
+        customersGetsQuery = {
+          discountOnQuantity: {
+            quantity: "1",
+            effect: {
+              percentage: Number(discountPercent) / Number(GetProduct.price),
+            },
           },
-        },
-      };
-    }
+        };
+      }
 
-    try {
+      // ======================== API to update discount ============================//
       const response = await graphql(
         `
           mutation discountAutomaticBxgyUpdate(
@@ -162,7 +167,7 @@ export const updateDiscount = async (graphql, data, shop) => {
             automaticBxgyDiscount: {
               usesPerOrderLimit: "1",
               startsAt: startDate,
-              endsAt: endDate ? endDate : null,
+              endsAt: endDate ? endDateString : null,
               title: offerTitle,
               customerGets: {
                 value: {
@@ -185,11 +190,19 @@ export const updateDiscount = async (graphql, data, shop) => {
       const dataAPI = await response.json();
       const updateResponse =
         dataAPI.data.discountAutomaticBxgyUpdate.automaticDiscountNode;
-      // console.log("updateResponse ========", updateResponse);
+
+      const error = dataAPI?.data?.discountAutomaticBxgyUpdate?.userErrors[0];
 
       if (updateResponse) {
+        // console.log("updateResponse ========", updateResponse);
+
+        let updateEndDate = dataAPI.data.discountAutomaticBxgyUpdate.automaticDiscountNode.automaticDiscount.endsAt
+
+        const splitOfferId = updateResponse.id.split("/")[4];
+        // console.log("splitOfferId ============", splitOfferId);
+
         let updatDatabaseOffer = await productDetails.findOneAndUpdate(
-          { OfferId: offerId },
+          { OfferId: splitOfferId },
           {
             buyProduct: {
               productID: BuyProduct.productID,
@@ -207,35 +220,33 @@ export const updateDiscount = async (graphql, data, shop) => {
             OfferTitle: offerTitle,
             offerType: selectOffer,
             OfferStartDate: startDate,
-            OfferEndDate: endDate ? new Date(endDate).toISOString() : null,
+            OfferEndDate: endDate
+              ? new Date(updateEndDate).toISOString()
+              : null,
             isActive:
-              endDate === null || endDate >= new Date() ? "Active" : "Expired",
+              endDate === null || new Date(endDateString) >= new Date()
+                ? "Active"
+                : "Expired",
           }
         );
-        // console.log("updatDatabaseOffer ==", updatDatabaseOffer);
-
         return {
           updateData: updatDatabaseOffer,
           status: 201,
         };
-      }
-
-      const errors = dataAPI.data.discountAutomaticBxgyUpdate.userErrors;
-      console.log("error", errors);
-      if (errors) {
+      } else if (error) {
+        console.log("error ===============", error);
         return {
-          data: errors[0].code,
+          data: error.code,
           status: 205,
-          message: errors[0].message,
+          message: error.message,
         };
       }
-    } catch (error) {
-      console.log("error in update route", error);
-      return error;
     }
-    return true;
   } catch (error) {
-    console.log("error ===", error);
-    return error;
+    console.log("error in update route", error.message);
+    return {
+      status: 404,
+      message: error.message,
+    };
   }
 };

@@ -5,7 +5,7 @@ export const action = async ({ request }) => {
   const offerId = await request.json();
 
   try {
-    const { admin, session } = await authenticate.admin(request);
+    const { admin } = await authenticate.admin(request);
 
     const deleteAPi = await admin.graphql(
       `mutation discountAutomaticDelete($id: ID!) {
@@ -24,25 +24,24 @@ export const action = async ({ request }) => {
         },
       }
     );
+
     const deleteApiResponse = await deleteAPi.json();
     // console.log("deleteAPI ============", deleteApiResponse);
 
     const getResponseOfferId =
       deleteApiResponse.data.discountAutomaticDelete.deletedAutomaticDiscountId;
-    console.log("getResponseOfferId =========", getResponseOfferId);
+    // console.log("getResponseOfferId =========", getResponseOfferId);
 
     const userErrors =
-      deleteApiResponse.data.discountAutomaticDelete.useruserErrorss;
+      deleteApiResponse.data.discountAutomaticDelete.userErrors[0];
     console.log("error ===", userErrors);
 
     if (getResponseOfferId) {
       let splitId = getResponseOfferId.split("/")[4];
-      // console.log("splitID ====", splitId);
-      // console.log("offerId ====", offerId);
-
+      
       const deleteOfferDatabase = await productDetails.findOneAndDelete({
         OfferId: splitId,
-      });
+      }); 
       // console.log("deleteOfferDatabase ====", deleteOfferDatabase);
 
       return {
@@ -51,13 +50,15 @@ export const action = async ({ request }) => {
       };
     } else if (userErrors) {
       return {
-        message: "Invalid Offer Id",
-        status: 201,
+        status: 205,
+        message: userErrors.message,
       };
     }
-    return true;
   } catch (error) {
     console.log("error in delete API", error);
-    return error;
+    return {
+      status: 404,
+      message: error.message,
+    };
   }
 };

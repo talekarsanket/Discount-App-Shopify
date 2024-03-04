@@ -21,15 +21,14 @@ export const action = async ({ request }) => {
     if (endDate) {
       endDate = new Date(endDate);
       endDate.setDate(endDate.getDate() + 1);
-      console.log("endDate =========", endDate);
+      // console.log("endDate =========", endDate);
     }
 
     const sessionObject = await shopifySession.find();
-    // console.log("sessionObject =====", sessionObject[0].accessToken);
 
+    // ========================== Check Discount Type ========================== //
     let customerGets;
     if (selectOffer === "Percent") {
-      // console.log("percent");
       customerGets = {
         value: {
           discountOnQuantity: {
@@ -53,7 +52,7 @@ export const action = async ({ request }) => {
       };
     }
 
-    // creating discount
+    // ========================== Creating Discount ========================== //
     try {
       const response = await axios({
         url: "https://new-test-55-second.myshopify.com/admin/api/2023-07/graphql.json",
@@ -132,7 +131,7 @@ export const action = async ({ request }) => {
                 ...customerGets,
                 items: {
                   products: {
-                    productsToAdd: [`${GetProduct.productID}`],
+                    productsToAdd: [`${BuyProduct.productID}`],
                   },
                 },
               },
@@ -155,15 +154,18 @@ export const action = async ({ request }) => {
         response.data.data.discountAutomaticBxgyCreate.automaticDiscountNode;
       // console.log("data ==============", data);
 
+      const error =
+        response.data.data.discountAutomaticBxgyCreate.userErrors[0];
+      // console.log("error ========", error);
+
       if (data) {
         let endsAt =
           response.data.data.discountAutomaticBxgyCreate.automaticDiscountNode
             .automaticDiscount.endsAt;
-        // console.log("iside data ========", endsAt.split("T")[0]);
 
         let splitId = data.id.split("/")[4];
-        // console.log("splitId ===============", splitId);
 
+        // ======================== Save data in database ======================== //
         let saveOfferInDB = new productDetails({
           storeURL: sessionObject[0].shop,
           buyProduct: {
@@ -190,20 +192,17 @@ export const action = async ({ request }) => {
               : "Expired",
         });
         saveOfferInDB.save();
+
         return {
           data: saveOfferInDB,
           status: 201,
           message: "Offer save successfully",
         };
-      }
-
-      const error = response.data.data.discountAutomaticBxgyCreate.userErrors;
-      console.log("error ========", error);
-      if (error) {
+      } else if (error) {
         return {
-          data: error[0].code,
+          data: error.code,
           status: 205,
-          message: error[0].message,
+          message: error.message,
         };
       }
     } catch (error) {

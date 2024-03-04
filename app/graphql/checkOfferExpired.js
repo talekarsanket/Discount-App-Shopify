@@ -7,6 +7,7 @@ async function checkOfferExpired() {
   // console.log("offers ====", offers);
 
   const CurrentDate = new Date();
+  console.log("CurrentDate ============", CurrentDate);
 
   for (const offer of offers) {
     if (

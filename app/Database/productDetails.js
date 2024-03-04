@@ -23,4 +23,7 @@ const productSchema = new mongoose.Schema({
   isActive: String,
 });
 
-export default mongoose.model("productDetails", productSchema);
+const ProductModel = mongoose.models.productDetails || mongoose.model("productDetails", productSchema);
+export default ProductModel;
+
+// export default mongoose.model("productDetails", productSchema);

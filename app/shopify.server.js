@@ -12,7 +12,7 @@ import checkOfferExpired from "./graphql/checkOfferExpired";
 import cron from "node-cron";
 
 //----------------------------- Create Cron job --------------------------//
-cron.schedule("0 0 * * * *", () => {
+cron.schedule(" 0 0 0 * * *", () => {
   console.log("running in every one hour");
 });
 checkOfferExpired();
